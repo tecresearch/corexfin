@@ -14,14 +14,18 @@ import org.springframework.web.context.request.WebRequest;
 
 import com.corexfin.dto.request.BankRequest;
 import com.corexfin.dto.response.BankResponse;
+import com.corexfin.exception.BankNotFoundException;
+import com.corexfin.exception.BankValidationException;
 import com.corexfin.model.Bank;
 import com.corexfin.repository.BankRepository;
 import com.corexfin.service.BankService;
+
 
 import jakarta.persistence.EntityNotFoundException;
 
 import org.hibernate.Session;
 import org.hibernate.annotations.Comments;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
@@ -40,6 +44,8 @@ import java.util.Optional;
 @Service
 public class BankServiceImpl implements BankService {
 
+
+
     private final BankRepository bankRepository;
 
     @Autowired
@@ -47,13 +53,17 @@ public class BankServiceImpl implements BankService {
         this.bankRepository = bankRepository;
     }
 
+ 
     @Override
     public BankResponse addAdminBankInCorexfin(BankRequest bankRequest, WebRequest webRequest) {
        try {
 
+
+
            /**
             * Validate bankRequest body
             */
+
 
            Bank bank = new Bank();
            /**
@@ -124,6 +134,58 @@ public class BankServiceImpl implements BankService {
 
     }
 
+    @Override
+    
+    /**
+     * @author raushan.srivastava
+     * Find bank by Bank Id
+     * 
+     * Response status:
+     *    "name": "hex bank of China",
+		  "domain": "brij.com",
+		  "username": "brij123",
+		  "password": "brij@1234",
+		  "owner": "Brij Bank",
+		  "email": "brij.doe@example.com",
+		  "office": "Main HQ",
+		  "status": "active",
+		  "role":"admin"
+     */
+    
+    public Bank getBankFromCorexfinById(String bankId) throws BankNotFoundException{
+    	 
+        return bankRepository.findById(bankId).orElseThrow(()->new BankNotFoundException("Bank with id :"+bankId+" not found"));
+
+   
+ 
+    }
+    
+    /**
+     * @author raushan.srivastava
+     * 
+     * Find bank by the name of Bank
+     * 
+     * Response status:
+     * 
+     * "id": "BNK-HEX-2025820-947",
+	   "name": "hex bank of China",
+	   "domain": "brij.com",
+	   "username": "brij123",
+	   "password": "brij@1234",
+	   "owner": "Brij Bank",
+	   "email": "brij.doe@example.com",
+	   "office": "Main HQ",
+	   "status": "active",
+	   "role": "admin"
+     */
+
+    @Override
+    public Bank getBankFromCorexfinByName(String bankName) throws BankNotFoundException {
+    	String name=bankName.trim();
+        return bankRepository.findByNameContainingIgnoreCase(name).orElseThrow(()->new BankNotFoundException("Bank with given name :"+name+" not found"));
+        		
+    }
+
 	@Override
 	public Bank getBankFromCorexfinById(String bankId) {
 		return null;
@@ -133,6 +195,7 @@ public class BankServiceImpl implements BankService {
 	public Bank getBankFromCorexfinByName(String bankName) {
 		return null;
 	}
+
 
 
 	/**

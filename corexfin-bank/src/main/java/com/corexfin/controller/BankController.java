@@ -2,9 +2,13 @@ package com.corexfin.controller;
 
 import com.corexfin.dto.request.BankRequest;
 import com.corexfin.dto.response.BankResponse;
+import com.corexfin.exception.BankNotFoundException;
+import com.corexfin.model.Bank;
+import com.corexfin.repository.BankRepository;
 import com.corexfin.service.BankService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.WebRequest;
@@ -22,11 +26,13 @@ import java.util.*;
 @RestController
 @RequestMapping("/admin/bank/v1")
 public class BankController {
+
     private final BankService bankService;
     @Autowired
     public BankController(BankService bankService) {
 
         this.bankService = bankService;
+
     }
 
 
@@ -60,6 +66,7 @@ public class BankController {
             BankResponse response= bankService.addAdminBankInCorexfin(bankRequest, webRequest);
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
+ 
     @DeleteMapping("/delete/{bankId}")
     public ResponseEntity<BankResponse> deleteBankFromCorexfinById(@PathVariable String bankId) {
 
